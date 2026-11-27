@@ -1,0 +1,20 @@
+{% extends "monitoring/base.html" %}
+{% block title %}About – SMARTFLOOD{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2>About SMARTFLOOD</h2>
+  <p>SMARTFLOOD is an ESP32-based water-level monitoring and warning system. A water sensor is read by an ESP32,
+     which classifies the level as NORMAL, WARNING or DANGER, lights a green, yellow or red LED (with a buzzer for DANGER)
+     and sends the reading over Wi-Fi to this Django dashboard.</p>
+  <h3>Status meaning</h3>
+  <ul>
+    <li><span class="badge badge-normal">NORMAL</span> Water is below the warning threshold.</li>
+    <li><span class="badge badge-warning">WARNING</span> Water has reached the warning threshold.</li>
+    <li><span class="badge badge-danger">DANGER</span> Water has reached the danger threshold.</li>
+  </ul>
+  <h3>Important note</h3>
+  <p>The sensor value is a raw electrical reading (0–4095), not a depth in centimeters. Converting it to centimeters
+     needs calibration with your own sensor and container. Low-cost water sensors also corrode over time, so this
+     system is for learning and early warning only, not a certified flood-safety device.</p>
+</section>
+{% endblock %}

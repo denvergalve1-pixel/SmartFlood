@@ -1,0 +1,15 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Alerts – SMARTFLOOD{% endblock %}
+{% block content %}
+<section class="cards cards-3">
+  <article class="card"><h2>Warning alerts</h2><p class="big" id="count-warning">0</p></article>
+  <article class="card"><h2>Danger alerts</h2><p class="big" id="count-danger">0</p></article>
+  <article class="card"><h2>Latest alert</h2><p class="big small" id="latest-alert">None</p></article>
+</section>
+<section class="panel">
+  <h2>Alert History</h2>
+  <p class="muted">An alert is created when the water status changes to WARNING or DANGER.</p>
+  <p id="empty-msg" class="muted" hidden>No alerts yet.</p>
+  <ul id="alert-list" class="alert-list"></ul>
+</section>
+{% endblock %}

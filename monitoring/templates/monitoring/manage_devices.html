@@ -1,0 +1,75 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Manage Devices – SMARTFLOOD{% endblock %}
+{% block content %}
+{% for m in messages %}
+<div class="banner {% if m.tags == 'error' %}banner-error{% else %}banner-ok{% endif %}">{{ m }}</div>
+{% endfor %}
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Add a device</h2>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+      <span class="muted">Logged in as {{ user.username }}</span>
+      <button type="submit" class="btn btn-small btn-grey">Log out</button>
+    </form>
+  </div>
+  <form method="post" class="form form-row">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="add">
+    <label>Device name <input type="text" name="name" maxlength="60" placeholder="e.g. Barangay Bridge ESP32" required></label>
+    <label>Location <input type="text" name="location" maxlength="120" placeholder="e.g. Riverside, Manila"></label>
+    <button type="submit" class="btn">Add device</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Your devices</h2>
+  {% if not devices %}<p class="muted">No devices yet. Add one above.</p>{% endif %}
+  {% for d in devices %}
+  <article class="devrow">
+    <div class="devrow-head">
+      <strong>{{ d.name }}</strong>
+      <span class="muted">{{ d.location|default:"no location" }}</span>
+      <span class="badge {% if d.is_active %}badge-connected{% else %}badge-none{% endif %}">{% if d.is_active %}Enabled{% else %}Disabled{% endif %}</span>
+    </div>
+    <p class="muted">Send these two values to the ESP32 through its setup hotspot. No code editing or re-flashing needed.</p>
+    <label class="copyrow">Server URL
+      <span class="copyline"><code class="keybox">{{ server_url }}</code><button type="button" class="btn btn-small btn-grey" data-copy="{{ server_url }}">Copy</button></span>
+    </label>
+    <label class="copyrow">API key (secret, for this ESP32 only)
+      <span class="copyline"><code class="keybox">{{ d.api_key }}</code><button type="button" class="btn btn-small btn-grey" data-copy="{{ d.api_key }}">Copy</button></span>
+    </label>
+    <details>
+      <summary>How to enter them on the ESP32</summary>
+      <ol class="muted steps">
+        <li>Connect the ESP32 by USB, open the Arduino <strong>Serial Monitor</strong> (115200 baud), type <code>setup</code> in the message box and press Send. (Holding <strong>BOOT</strong> for 3 seconds also works, and a new or unconnected board opens the hotspot by itself.)</li>
+        <li>On your phone, join Wi-Fi <code>SmartFloodSetUp</code> (default password <code>smartflood123</code>).</li>
+        <li>The setup page opens by itself, or go to <code>http://192.168.4.1</code>.</li>
+        <li>Paste the <strong>Server URL</strong> and <strong>API key</strong> above, choose your Wi-Fi, then tap <strong>Save &amp; restart</strong>.</li>
+      </ol>
+      <p class="muted">The server URL must use this PC's LAN IP (filled in for you), and the PC and ESP32 must be on the same Wi-Fi. For PythonAnywhere, use your <code>https://yourname.pythonanywhere.com/api/sensor-data/</code> address instead.</p>
+    </details>
+    <div class="devrow-actions">
+      <form method="post">{% csrf_token %}<input type="hidden" name="action" value="toggle"><input type="hidden" name="device_id" value="{{ d.id }}"><button class="btn btn-small btn-grey">{% if d.is_active %}Disable{% else %}Enable{% endif %}</button></form>
+      <form method="post" onsubmit="return confirm('Create a new key? The old key stops working until you enter the new one in the ESP32 setup hotspot.');">{% csrf_token %}<input type="hidden" name="action" value="regenerate"><input type="hidden" name="device_id" value="{{ d.id }}"><button class="btn btn-small btn-grey">New key</button></form>
+      <form method="post" onsubmit="return confirm('Delete {{ d.name|escapejs }} and ALL its readings and alerts?');">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="device_id" value="{{ d.id }}"><button class="btn btn-small btn-red">Delete</button></form>
+    </div>
+  </article>
+  {% endfor %}
+</section>
+<script>
+document.querySelectorAll('[data-copy]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var text = btn.getAttribute('data-copy');
+    function done() { var o = btn.textContent; btn.textContent = 'Copied!'; setTimeout(function () { btn.textContent = o; }, 1500); }
+    function fallback() {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  });
+});
+</script>
+{% endblock %}

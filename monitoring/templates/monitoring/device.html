@@ -1,0 +1,22 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Device Information – SMARTFLOOD{% endblock %}
+{% block content %}
+<section class="panel">
+  <h2>Device Information</h2>
+  {% if selected_device %}
+  <dl class="info">
+    <dt>ESP32 device name</dt><dd>{{ selected_device.name }}</dd>
+    <dt>Connection status</dt><dd><span id="val-conn" class="badge badge-none">—</span></dd>
+    <dt>Last communication</dt><dd id="val-updated">—</dd>
+    <dt>Time since last reading</dt><dd id="val-ago">—</dd>
+    <dt>Monitoring location</dt><dd>{{ selected_device.location|default:"—" }}</dd>
+    <dt>Latest reading</dt><dd id="val-reading">—</dd>
+    <dt>Account state</dt><dd>{% if selected_device.is_active %}Enabled{% else %}Disabled (data rejected){% endif %}</dd>
+    <dt>API endpoint</dt><dd><code>POST /api/sensor-data/</code> (header <code>X-API-Key</code> = this device's key)</dd>
+  </dl>
+  <p id="empty-msg" class="muted" hidden>Waiting for ESP32 data.</p>
+  {% else %}
+  <p class="muted">No devices yet. <a href="{% url 'manage-devices' %}">Add one →</a></p>
+  {% endif %}
+</section>
+{% endblock %}

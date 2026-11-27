@@ -1,0 +1,16 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Log in – SMARTFLOOD{% endblock %}
+{% block content %}
+<section class="panel narrow">
+  <h2>Log in to manage devices</h2>
+  <p class="muted">Use the account you created with <code>createsuperuser</code>.</p>
+  {% if form.errors %}<div class="banner banner-error">Wrong username or password.</div>{% endif %}
+  <form method="post" class="form">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <label>Username {{ form.username }}</label>
+    <label>Password {{ form.password }}</label>
+    <button type="submit" class="btn">Log in</button>
+  </form>
+</section>
+{% endblock %}

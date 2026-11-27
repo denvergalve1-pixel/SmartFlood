@@ -1,0 +1,49 @@
+{% extends "monitoring/base.html" %}
+{% block content %}
+{% if not devices %}
+<div class="banner banner-wait">No devices yet. <a href="{% url 'manage-devices' %}">Log in and add your first ESP32 →</a></div>
+{% else %}
+<div id="empty-msg" class="banner banner-wait" hidden>Waiting for ESP32 data from {{ selected_device.name }}.</div>
+{% endif %}
+
+<section class="panel">
+  <h2>All Devices</h2>
+  <div id="device-grid" class="device-grid"></div>
+  <p class="muted"><a href="{% url 'manage-devices' %}">Add or manage devices →</a></p>
+</section>
+
+<section class="cards">
+  <article class="card">
+    <h2>Latest Sensor Reading</h2>
+    <p class="big" id="val-reading">—</p>
+    <p class="muted">Raw value (0–4095)</p>
+  </article>
+  <article class="card">
+    <h2>Water Condition</h2>
+    <p class="big"><span id="val-status" class="badge badge-none">—</span></p>
+    <p class="muted" id="val-status-note">No data yet</p>
+  </article>
+  <article class="card">
+    <h2>ESP32 Connection</h2>
+    <p class="big"><span id="val-conn" class="badge badge-none">—</span></p>
+    <p class="muted" id="val-conn-note">&nbsp;</p>
+  </article>
+  <article class="card">
+    <h2>Last Update</h2>
+    <p class="big small" id="val-updated">—</p>
+    <p class="muted" id="val-ago">&nbsp;</p>
+  </article>
+</section>
+
+<section class="panel">
+  <h2>Monitoring Chart</h2>
+  <div class="chart-wrap"><canvas id="chart"></canvas></div>
+  <p id="chart-msg" class="muted" hidden></p>
+</section>
+
+<section class="panel">
+  <h2>Recent Alerts</h2>
+  <ul id="alert-list" class="alert-list"></ul>
+  <p class="muted"><a href="{% url 'alerts' %}">View all alerts →</a></p>
+</section>
+{% endblock %}

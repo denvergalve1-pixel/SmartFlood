@@ -1,0 +1,51 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SMARTFLOOD – Water Monitoring Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'monitoring/css/style.css' %}">
+</head>
+<body data-page="{{ page }}"
+      data-device="{{ selected_device.id|default:'' }}"
+      data-api-devices="{% url 'api-devices' %}"
+      data-api-latest="{% url 'api-latest' %}"
+      data-api-history="{% url 'api-history' %}"
+      data-api-alerts="{% url 'api-alerts' %}">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">≋</span>
+      <div>
+        <h1>SMARTFLOOD</h1>
+        <p>Water Monitoring Dashboard</p>
+      </div>
+    </div>
+    <span id="conn-pill" class="pill pill-off">Checking…</span>
+  </header>
+  <nav class="nav">
+    <a href="{% url 'dashboard' %}" class="{% if page == 'dashboard' %}active{% endif %}">Dashboard</a>
+    <a href="{% url 'history' %}" class="{% if page == 'history' %}active{% endif %}">Monitoring History</a>
+    <a href="{% url 'alerts' %}" class="{% if page == 'alerts' %}active{% endif %}">Alerts</a>
+    <a href="{% url 'device' %}" class="{% if page == 'device' %}active{% endif %}">Device Information</a>
+    <a href="{% url 'about' %}" class="{% if page == 'about' %}active{% endif %}">About</a>
+    <a href="{% url 'manage-devices' %}" class="{% if page == 'manage' %}active{% endif %}">Manage Devices</a>
+  </nav>
+  {% if devices and page != 'manage' and page != 'login' and page != 'about' %}
+  <div class="devbar">
+    <label for="device-select">Device:</label>
+    <select id="device-select">
+      {% for d in devices %}<option value="{{ d.id }}" {% if d.id == selected_device.id %}selected{% endif %}>{{ d.name }}{% if d.location %} – {{ d.location }}{% endif %}</option>{% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <main class="container">
+    <div id="sample-banner" class="banner banner-sample" hidden>
+      Showing <strong>SAMPLE DATA</strong> for testing – not from the ESP32.
+    </div>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">SMARTFLOOD – ESP32-based water-level monitoring and warning system</footer>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="{% static 'monitoring/js/dashboard.js' %}"></script>
+</body>
+</html>
